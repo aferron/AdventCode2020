@@ -77,8 +77,6 @@ def depthFirst(graph):
     adjList = graph[0]
     # get the dictionary
     lookUp = graph[1]
-    # just work with first item for now
-    first = adjList[0]
     # keep track of which vertices are on the path to the gold bag
     goldset = set()
 
@@ -124,10 +122,28 @@ def dive(lookUp, adjList, goldset, vertex):
             #print("(contains gold)")
     return goldpath
 
+def depthFirstPart2(graph):
+    adjList = graph[0]
+    lookUp = graph[1]
 
+    # find the shiny gold bag in the adjacency list
+    for i in adjList:
+        if i.color == "shiny gold":
+            count = divePart2(lookUp, adjList, i)
+            break
+    return count
 
-
-
+def divePart2(lookUp, adjList, vertex):
+    vertex.display()
+    count = 0
+    if not vertex.contains:
+        vertex.visited = True
+        return 0
+    #if vertex.visited is True:
+        #return 1
+    for node in vertex.contains:
+        count += node.weight + node.weight * divePart2(lookUp, adjList, adjList[lookUp[node.color]])
+    return count 
 
 graph = readIn()
-print(depthFirst(graph))
+print(depthFirstPart2(graph))
