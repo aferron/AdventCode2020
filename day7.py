@@ -13,9 +13,12 @@ class bag:
 
     def display(self):
         print(self.color, "->", end='\n')
-        for c in self.contains:
-            c.display()
-            print()
+        if not self.contains:
+            print("no bags")
+        else:
+            for c in self.contains:
+                c.display()
+                print()
 
 class edge:
     def __init__(self, weight=0, color=''):
@@ -51,8 +54,8 @@ def readIn():
                     e = None
                 else:
                     # remove 'bags' or 'bag'
-                    e = e.removesuffix('s')
-                    e = e.removesuffix('bag')
+                    e = e.rstrip('s')
+                    e = e.rstrip('bag')
                     # separate number from color and get rid of leading or trailing whitespace
                     e = e.split(' ', 1)
                     e[0] = e[0].strip()
@@ -79,39 +82,46 @@ def depthFirst(graph):
     # keep track of which vertices are on the path to the gold bag
     goldset = set()
 
-    # loop through the edge list
-    #for e in first.contains:
-    dive(lookUp, adjList, goldset, first)
+    for i in adjList:
+        dive(lookUp, adjList, goldset, i)
+    print("goldset: ", goldset)
+    return len(goldset)
 
 def dive(lookUp, adjList, goldset, vertex):
+    goldpath = False
+    #if vertex.visited is True:
+        #print("V ", end='')
+    #vertex.display()
+    #print()
     # if the edge list is empty we can return
     if not vertex.contains:
         vertex.visited = True
-        return 0
+        return False 
     # if we're at gold celebrate
-    if vertex.color == "bright gold":
+    if vertex.color == "shiny gold":
         print("*****GOLD*****")
-        return 1
+        return True
     # if we've already been here return whether we're on the right path
     if vertex.visited is True:
         if vertex.pathtogold is True:
-            return 1
+            return True
         else:
-            return 0
+            return False 
 
     # note that we've been here
     vertex.visited = True
     # loop through list with recursive call
     for node in vertex.contains:
         #lookup node.color in dictionary for index number
-        goldpath = dive(lookUp, adjList, goldset, adjList[lookUp[vertex.color]])
-        print(vertex.color, end=' ')
+        goldpath = goldpath or dive(lookUp, adjList, goldset, adjList[lookUp[node.color]])
+        #print(vertex.color, end=' ')
         if goldpath is True:
             # mark that we're on the path, and add to set on the path
-            vertex.goldpath = True
+            vertex.pathtogold = True
+            print(vertex.color, " contains shiny gold")
             # Add to set that is on the path
-            goldset.append(vertex.color)
-            print("(contains gold)")
+            goldset.add(vertex.color)
+            #print("(contains gold)")
     return goldpath
 
 
@@ -120,4 +130,4 @@ def dive(lookUp, adjList, goldset, vertex):
 
 
 graph = readIn()
-depthFirst(graph)
+print(depthFirst(graph))
