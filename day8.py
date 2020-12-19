@@ -53,11 +53,13 @@ def part2(instructions):
     index = 0
     ins = instructions[index]
     length = len(instructions)
+    print("length:",length)
     c = 0
     changed = False
 
     for i in range(0,length):
         while ins.visited is False:
+            ins.visited = True
             if ins.function == 'acc':
                 accumulator += ins.value
                 index += 1
@@ -65,28 +67,36 @@ def part2(instructions):
                 if c == i and changed is False:
                     ins.function = 'nop'
                     changed = True
+                    ins.visited = False
                     print("changed at c =", c)
                 else:
                     index += ins.value
+                    c += 1
             elif ins.function == 'nop':
                 if c == i and changed is False:
                     ins.function = 'jmp'
+                    ins.visited = False
                     changed = True
                     print("changed at c =", c)
                 else:
                     index += 1
+                    c += 1
             else:
                 print('error')
                 break
             if index == length:
-                break
+                return accumulator
             ins = instructions[index]
-        c += 1
+        accumulator = 0
+        index = 0
+        ins = instructions[0]
+        c = 0
         changed = False
-        if index == length:
-            break
+        for x in instructions:
+            x.visited = False
 
-    return accumulator
+
+    return -1
 
 read = readIn()
 print(part2(read))
